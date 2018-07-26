@@ -20,7 +20,7 @@ How to use my plugin.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'base_resource', github: 'wuyuedefeng/base-resource'
+gem 'base_resource', github: 'rails-gems/base-resource'
 ```
 And then execute:
 ```bash

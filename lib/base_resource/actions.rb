@@ -27,7 +27,8 @@ module BaseResource
     end
     alias_method :br_show, :show
 
-    def create
+    def create options
+      options = {auto_render_success: true, auto_render_error: true}.merge!(options || {})
       form = form_const.new(resource_klass.new)
       if form.validate(params)
         instance_variable_set("@#{resource_name(form.model)}", form.model)
@@ -35,16 +36,16 @@ module BaseResource
           form.save do |hash|
             yield hash, form
           end
-          render json: { msg: :successfully_create }, status: 200
+          render json: { msg: :successfully_create }, status: 200 and return if options[:auto_render_success]
         else
           if form.save
-            render json: { msg: :successfully_create }, status: 200
+            render json: { msg: :successfully_create }, status: 200  and return if options[:auto_render_success]
           else
-            render json: { msg: form.errors.full_messages.first || form.model.errors.full_messages.first }, status: 422
+            render json: { msg: form.errors.full_messages.first || form.model.errors.full_messages.first }, status: 422 and return if options[:auto_render_error]
           end
         end
       else
-        render json: { msg: form.errors.full_messages.first }, status: 422
+        render json: { msg: form.errors.full_messages.first }, status: 422  and return if options[:auto_render_error]
       end
     end
     alias_method :br_create, :create

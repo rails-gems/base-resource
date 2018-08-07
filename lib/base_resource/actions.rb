@@ -27,7 +27,7 @@ module BaseResource
     end
     alias_method :br_show, :show
 
-    def create options
+    def create options = {}
       options = {auto_render_success: true, auto_render_error: true}.merge!(options || {})
       form = form_const.new(resource_klass.new)
       if form.validate(params)

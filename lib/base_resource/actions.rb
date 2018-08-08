@@ -30,8 +30,8 @@ module BaseResource
     def create options = {}
       options = {auto_render_success: true, auto_render_error: true, custom_save: false}.merge!(options || {})
       form = form_const.new(resource_klass.new)
+      instance_variable_set("@#{resource_name(form.model)}", form.model)
       if form.validate(params)
-        instance_variable_set("@#{resource_name(form.model)}", form.model)
         if options[:custom_save]
           form.save do |hash|
             yield hash, form

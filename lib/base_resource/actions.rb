@@ -28,23 +28,25 @@ module BaseResource
     alias_method :br_show, :show
 
     def create options = {}
-      options = {auto_render_success: true, auto_render_error: true}.merge!(options || {})
+      options = {auto_render_success: true, auto_render_error: true, custom_save: false}.merge!(options || {})
       form = form_const.new(resource_klass.new)
       if form.validate(params)
         instance_variable_set("@#{resource_name(form.model)}", form.model)
-        if block_given?
+        if options[:custom_save]
           form.save do |hash|
             yield hash, form
-          end
-          render json: { msg: :successfully_create }, status: 200 and return if options[:auto_render_success]
+          end if block_given?
         else
           if form.save
+            yield true if block_given?
             render json: { msg: :successfully_create }, status: 200  and return if options[:auto_render_success]
           else
+            yield false if block_given?
             render json: { msg: form.errors.full_messages.first || form.model.errors.full_messages.first }, status: 422 and return if options[:auto_render_error]
           end
         end
       else
+        yield false if block_given? && !options[:custom_save]
         render json: { msg: form.errors.full_messages.first }, status: 422  and return if options[:auto_render_error]
       end
     end

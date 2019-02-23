@@ -28,8 +28,8 @@ module BaseResource
     alias_method :br_show, :show
 
     def create options = {}
-      options = {auto_render_success: true, auto_render_error: true, custom_save: false, model: nil}.merge!(options || {})
-      form = form_const.new(options[:model] || resource_klass.new)
+      options = {auto_render_success: true, auto_render_error: true, custom_save: false, model_class: nil}.merge!(options || {})
+      form = form_const.new((options[:model_class] || resource_klass).new)
       instance_variable_set("@#{resource_name(form.model)}", form.model)
       if form.validate(params)
         if options[:custom_save]
